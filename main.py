@@ -2,17 +2,48 @@ from tkinter import *
 from tkinter import ttk, messagebox
 
 # Constants
-GENERAL_FONT = ("Segoe UI", 14)
+PRIMARY_FONT = ("Segoe UI", 14)
+HEADING_FONT = ("Algerian", 20, "underline")
+RESULT_FONT = ("Segeo UI", 14, "bold")
 ENTRY_WIDTH = 15
 
+# Dark theme colors
+BACKGROUND_COLOR = '#2E2E2E'
+FOREGROUND_COLOR = '#FFFFFF'
+BUTTON_COLOR = "#4E4E4E"
+BUTTON_HOVER_COLOR = '#5E5E5E'
+ENTRY_BG = '#3E3E3E'
+FRAME_BG = '#2E2E2E'
+
+# Color contrast for the exit button
+EXIT_BUTTON_COLOR = '#D32F2F'
+EXIT_BUTTON_HOVER_COLOR = '#C62828'
+
+# Function to terminate the GUI
+def close_app():
+    window.destroy()
+
+def reset_fields():
+    """Reset all entry fields and result variables."""
+    current_stock_price_var.set("")
+    target_price_var.set("")
+    strike_price_var.set("")
+    premium_per_share_var.set("")
+    option_status_var.set("")
+    intrinsic_value_var.set("")
+    profit_result_var.set("")
+    percentage_return_var.set("")
+    net_profit_var.set("")
+
+
 def create_label(window, text, row):
-    label = Label(window, text=text, font=GENERAL_FONT)
-    label.grid(row=row, column=0, sticky=W, padx=8, pady=6)
+    label = ttk.Label(window, text=text, font=PRIMARY_FONT)
+    label.grid(row=row, column=0, sticky=W+E, padx=8, pady=6)
 
     return label
 def create_entry(window, var, row):
-    entry = Entry(window, width=ENTRY_WIDTH, textvariable=var)
-    entry.grid(row=row, column=1)
+    entry = ttk.Entry(window, width=ENTRY_WIDTH, textvariable=var)
+    entry.grid(row=row, column=1, sticky=E)
 
     return entry
 def calculate_option_details():
@@ -64,14 +95,19 @@ def calculate_option_details():
     except ValueError:
         messagebox.showwarning(title="Error", message="Please enter valid numbers.")
         return
+
+
+
 # Setup main window
 window = Tk()
 window.title("Options Details Calculator")
-window.minsize(width=400, height=300)
-window.config(padx=10)
-# window.configure(bg='black')
+window.minsize(width=400, height=400)
+window.resizable(False, False)
+window.config(bg=BACKGROUND_COLOR,padx=10, pady=10)
+
+# Main heading
 Label(window, text= "Option Status & Future Profitability Calculator" ,
-      font=("Algerian", 20, "bold", "underline")).grid(row=0, column=0, columnspan=2,  pady=10)
+      font=HEADING_FONT,bg=BACKGROUND_COLOR, fg=FOREGROUND_COLOR).grid(row=0, column=0, columnspan=2,  pady=10)
 
 # Variables for storing inputs
 current_stock_price_var = StringVar()
@@ -85,42 +121,95 @@ percentage_return_var = StringVar()
 net_profit_var = StringVar()
 
 
-    # ------------------------- CREATE GUI COMPONENTS, LABELS & BUTTONS --------------------------------------
-create_label(window, "Current Stock Price:", 1)
-create_entry(window, current_stock_price_var, 1).focus()
+# ------------------------- CREATE GUI COMPONENTS, LABELS & BUTTONS --------------------------------------
 
-create_label(window, "Target Stock Price at Expiration:", 2)
-create_entry(window, target_price_var, 2)
+# Input frame
+input_frame = ttk.LabelFrame(window, text="Input Fields", padding=(10,5))
+input_frame.grid(row=2, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+input_frame.grid_columnconfigure(1, weight=1)
 
-create_label(window, "Option Strike Price:", 3)
-create_entry(window, strike_price_var, 3)
+# Add all the labels and inputs to the input frame
+create_label(input_frame, "Current Stock Price:", 0)
+create_entry(input_frame, current_stock_price_var, 0).focus()
 
-create_label(window, "Option Premium (Per Share):",4)
-create_entry(window, premium_per_share_var, 4)
+create_label(input_frame, "Target Stock Price at Expiration:", 1)
+create_entry(input_frame, target_price_var, 1)
 
-# Results are based on a standard option contract representing 100 shares
-info_100shares_label = Label(window,
-                             text="Note: Results are based on standard option contracts representing 100 shares.",
-                             font=GENERAL_FONT, wraplength=350)
-info_100shares_label.grid(row=5, column=0, columnspan=2, pady=5)
-# Add button to trigger calculation
-button = Button(window, text="Calculate", command=calculate_option_details)
-button.grid(row=6, column=0, columnspan=2, pady=8)
+create_label(input_frame, "Option Strike Price:", 2)
+create_entry(input_frame, strike_price_var, 2)
+
+create_label(input_frame, "Option Premium (Per Share):",3)
+create_entry(input_frame, premium_per_share_var, 3)
 
 # To display the profit results, percentage return, net profit and instrinsic value on GUI main window
-profit_result_label = Label(window, textvariable=profit_result_var, font=GENERAL_FONT)
-profit_result_label.grid(row=7, column=0, columnspan=2, pady=8)
+# Results frame
+results_frame = ttk.LabelFrame(window, text="Results", padding=(10,5))
+results_frame.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+results_frame.grid_columnconfigure(1, weight=1)
 
-percentage_return_label = Label(window, textvariable=percentage_return_var, font=GENERAL_FONT)
-percentage_return_label.grid(row=8, column=0, columnspan=2, pady=8)
+#Add results to the results frame
+profit_result_label = Label(results_frame, textvariable=profit_result_var, font=RESULT_FONT)
+profit_result_label.grid(row=0, column=0, columnspan=2, pady=8, sticky=W+E)
+profit_result_label.config(bg=BACKGROUND_COLOR, fg=FOREGROUND_COLOR)
 
-option_status_label = Label(window, textvariable=option_status_var, font=GENERAL_FONT)
-option_status_label.grid(row=9, column=0, columnspan = 2, pady=8)
+percentage_return_label = Label(results_frame, textvariable=percentage_return_var, font=RESULT_FONT)
+percentage_return_label.grid(row=1, column=0, columnspan=2, pady=8, sticky=W + E)
+percentage_return_label.config(bg=BACKGROUND_COLOR, fg=FOREGROUND_COLOR)
 
-intrinsic_value_label = Label(window, textvariable=intrinsic_value_var, font=GENERAL_FONT)
-intrinsic_value_label.grid(row=10, column=0, columnspan=2,pady=8)
+option_status_label = Label(results_frame, textvariable=option_status_var, font=RESULT_FONT)
+option_status_label.grid(row=2, column=0, columnspan = 2, pady=8, sticky=W + E)
+option_status_label.config(bg=BACKGROUND_COLOR, fg=FOREGROUND_COLOR)
 
-net_profit_label = Label(window, textvariable=net_profit_var, font=GENERAL_FONT)
-net_profit_label.grid(row=11, column=0, columnspan=2, pady=8)
+intrinsic_value_label = Label(results_frame, textvariable=intrinsic_value_var, font=RESULT_FONT)
+intrinsic_value_label.grid(row=3, column=0, columnspan=2,pady=8, sticky=W + E)
+intrinsic_value_label.config(bg=BACKGROUND_COLOR, fg=FOREGROUND_COLOR)
+
+net_profit_label = Label(results_frame, textvariable=net_profit_var, font=RESULT_FONT)
+net_profit_label.grid(row=4, column=0, columnspan=2, pady=8, sticky=W + E)
+net_profit_label.config(bg=BACKGROUND_COLOR, fg=FOREGROUND_COLOR)
+
+# Results are based on a standard option contract representing 100 shares
+info_100shares_label = Label(input_frame,
+                             text="Note: Results are based on standard option contracts representing 100 shares.",
+                             font=PRIMARY_FONT, wraplength=350)
+info_100shares_label.grid(row=4, column=0, columnspan=2, pady=5)
+info_100shares_label.config(bg=BACKGROUND_COLOR, fg=FOREGROUND_COLOR)
+
+# Button used to trigger calculation
+button = ttk.Button(window, text="Calculate", command=calculate_option_details, style='TButton')
+button.grid(row=3, column=0, pady=8,padx=(0,5), sticky=E)
+
+# Button used to reset all entry fields
+reset_button = ttk.Button(window, text="Reset", command=reset_fields, style='TButton')
+reset_button.grid(row=3, column=1, pady=8, padx=(5,0), sticky=W)
+
+
+# Button used to close / terminate app
+exit_button = ttk.Button(window, text="Exit", command=close_app, style='Exit.TButton')
+exit_button.grid(row=1, column=1, sticky=E, padx=6)
+
+# ------------------------------ STYLING OBJECTS ---------------------------------
+style = ttk.Style()
+style.configure('.', background=FRAME_BG, foreground=FOREGROUND_COLOR)
+
+# Button styling
+style.theme_use('clam')
+style.configure('TButton', background=BUTTON_COLOR, foreground=FOREGROUND_COLOR, bordercolor=BUTTON_COLOR)
+style.map('TButton',
+          background=[('active', BUTTON_HOVER_COLOR)],
+          foreground=[('active', FOREGROUND_COLOR)])
+# Exit Button styling
+style.configure('Exit.TButton', background=EXIT_BUTTON_COLOR, foreground=FOREGROUND_COLOR, bordercolor=EXIT_BUTTON_COLOR)
+style.map('Exit.TButton',
+          background=[('active', EXIT_BUTTON_HOVER_COLOR)],
+          foreground=[('active', FOREGROUND_COLOR)])
+
+# Label styling
+style.configure('TLabelframe', background=BACKGROUND_COLOR, foreground=FOREGROUND_COLOR)
+style.configure('TLabelframe.Label', background=BACKGROUND_COLOR, foreground=FOREGROUND_COLOR)
+style.configure('TLabel', background=FRAME_BG, foreground=FOREGROUND_COLOR)
+
+# Entry styling
+style.configure('TEntry', fieldbackground=ENTRY_BG, foreground=FOREGROUND_COLOR, background=FRAME_BG)
 
 window.mainloop()
