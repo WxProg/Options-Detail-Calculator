@@ -190,6 +190,12 @@ reset_button.grid(row=3, column=1, pady=8, padx=(5, 0), sticky=W)
 exit_button = ttk.Button(window, text="Exit", command=close_app, style='Exit.TButton')
 exit_button.grid(row=1, column=1, sticky=E, padx=6)
 
+# Combobox Button for call or put option
+options = ['Call', 'Put']
+option_combobox = ttk.Combobox(window, values=options, state="readonly")
+option_combobox.grid(row=1, column=0, sticky=W, padx=(0, 6))
+option_combobox.set("Make a selection")
+
 # ------------------------------ STYLING OBJECTS ---------------------------------
 style = ttk.Style()
 style.configure('.', background=FRAME_BG, foreground=FOREGROUND_COLOR)
@@ -206,6 +212,16 @@ style.configure('Exit.TButton', background=EXIT_BUTTON_COLOR, foreground=FOREGRO
 style.map('Exit.TButton',
           background=[('active', EXIT_BUTTON_HOVER_COLOR)],
           foreground=[('active', FOREGROUND_COLOR)])
+
+# Combobox styling
+style.configure('TCombobox', fieldbackground=BUTTON_COLOR, foreground=FOREGROUND_COLOR, background=FRAME_BG,
+                selectbackground=BUTTON_HOVER_COLOR)
+style.map('TCombobox',
+          fieldbackground=[('readonly', BUTTON_COLOR), ('readonly focus', BUTTON_HOVER_COLOR)],
+          selectbackground=[('readonly', BUTTON_COLOR), ('readonly focus', BUTTON_HOVER_COLOR)],
+          selectforeground=[('readonly', FOREGROUND_COLOR)],
+          background=[('readonly', BUTTON_COLOR), ('readonly focus', BUTTON_HOVER_COLOR)]
+          )
 
 # Label styling
 style.configure('TLabelframe', background=BACKGROUND_COLOR, foreground=FOREGROUND_COLOR)
