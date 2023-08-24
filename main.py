@@ -54,9 +54,13 @@ def create_entry(window_to_use, var, row):
 
 
 def calculate_option_details():
-    global future_intrinsic_value, option_status, intrinsic_value
     try:
         option_type = option_combobox.get().strip()
+
+        # Initialize variables
+        option_status = None
+        intrinsic_value = 0
+        future_intrinsic_value = 0
 
         if option_type not in ['Call', 'Put']:
             messagebox.showwarning(title="Input Warning",
