@@ -36,6 +36,7 @@ def reset_fields():
     profit_result_var.set("")
     percentage_return_var.set("")
     net_profit_var.set("")
+    option_combobox.set("Make a selection")
 
 
 def create_label(window_to_use, text, row):
@@ -53,7 +54,15 @@ def create_entry(window_to_use, var, row):
 
 
 def calculate_option_details():
+    global future_intrinsic_value, option_status, intrinsic_value
     try:
+        option_type = option_combobox.get().strip()
+
+        if option_type not in ['Call', 'Put']:
+            messagebox.showwarning(title="Input Warning",
+                                   message="Invalid option type selected. Please choose either 'Call' or 'Put'.")
+            return
+
         # Get the values from GUI entry fields and convert them to floats
         current_price = float(current_stock_price_var.get())
         target_price = float(target_price_var.get())
@@ -61,31 +70,42 @@ def calculate_option_details():
         premium_per_share = float(premium_per_share_var.get())
         premium_paid = premium_per_share * 100  # Convert per-share premium to total premium for 100 shares
 
-        # Determine the intrinsic value and current option status
         tolerance = 0.05  # Define tolerance level for at-the-money options
 
-        if abs(current_price - strike_price) <= tolerance:
-            option_status = "At-the-Money (ATM)"
-            intrinsic_value = 0
-        elif current_price > strike_price:
-            option_status = "In-the-Money (ITM)"
-            intrinsic_value = current_price - strike_price
-        else:
-            option_status = "Out-of-the-Money (OTM)"
-            intrinsic_value = 0
+        # Based on option type selection. Determine the intrinsic value and current option status
+        if option_type == 'Call':
+            intrinsic_value = max(current_price - strike_price, 0)
+
+            if abs(current_price - strike_price) <= tolerance:
+                option_status = "At-the-Money (ATM)"
+            elif current_price > strike_price:
+                option_status = "In-the-Money (ITM)"
+            else:
+                option_status = "Out-of-the-Money (OTM)"
+
+            # Intrinsic value is the amount by which an option is in-the-money.
+            #  For a call option, it is cal. as the difference between the stock price and the strike price
+            #  only when the stock price is above the strike price
+            future_intrinsic_value = max(target_price - strike_price, 0) * 100
+
+        elif option_type == 'Put':
+            intrinsic_value = max(strike_price - current_price, 0)
+
+            if abs(current_price - strike_price) <= tolerance:
+                option_status = "At-the-Money (ATM)"
+            elif current_price < strike_price:
+                option_status = "In-the-Money (ITM)"
+            else:
+                option_status = "Out-of-the-Money (OTM)"
+
+            future_intrinsic_value = max(strike_price - target_price, 0) * 100
 
         if premium_per_share == 0:
             messagebox.showwarning(title="Input Warning", message="Premium paid, cannot be zero.")
             return
 
-        # Intrinsic value is the amount by which an option is in-the-money.
-        #  For a call option, it is cal. as the difference between the stock price and the strike price
-        #  only when the stock price is above the strike price
-        future_intrinsic_value = max(target_price - strike_price, 0) * 100
-
         # Compute future profitability of the option & net profit.
         profit = (future_intrinsic_value - premium_paid)
-        net_profit = profit - premium_paid
 
         # Determine the percentage return
         percentage_return = (profit / premium_paid) * 100
@@ -95,7 +115,7 @@ def calculate_option_details():
         intrinsic_value_var.set(f"Current Intrinsic Value: ${intrinsic_value: .2f}")
         profit_result_var.set(f"Projected Profit is: ${profit:.2f}")
         percentage_return_var.set(f"Projected % Return is: {round(percentage_return)}%")
-        net_profit_var.set(f"Net Profit: ${net_profit}")
+        net_profit_var.set(f"Net Profit: ${profit}")
 
     except ValueError:
         messagebox.showwarning(title="Error", message="Please enter valid numbers.")
