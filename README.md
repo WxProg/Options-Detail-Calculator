@@ -1,4 +1,4 @@
-# Options Details Calculator
+# Optionated
 
 ## Overview
 
