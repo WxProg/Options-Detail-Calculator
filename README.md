@@ -6,7 +6,7 @@ The Options Details Calculator is a GUI-based tool designed to assist users in u
 
 Please note, this tool currently operates as a Minimum Viable Product (MVP). It offers a streamlined set of features with the aim of expanding based on user feedback and further iterations.
 
-![optionsDetailsCalculator](https://github.com/WxProg/Options-Detail-Calculator/assets/101136336/606822da-679a-482e-9973-5ce605fef857)
+![optionated1](https://github.com/WxProg/Options-Detail-Calculator/assets/101136336/228bf434-f146-4e78-befa-70b84b1c1cbc)
 
 ## Features
 
